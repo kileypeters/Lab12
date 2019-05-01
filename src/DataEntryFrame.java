@@ -3,6 +3,12 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -250,34 +256,74 @@ public class DataEntryFrame extends JFrame
 			// TODO: extract object from a file (hint, use file.getAbsolutePath()):
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            File file = chooser.getSelectedFile();
-	            file.getAbsolutePath();
+	            
+	            FileInputStream fileInput = null;
+	            ObjectInputStream objIn = null;
+	            
+	            try {
+					fileInput = new FileInputStream(file.getAbsolutePath());
+					objIn = new ObjectInputStream(fileInput);
+					datalist = (ArrayList<FormData>) objIn.readObject();
+					
+					
+				} catch (IOException | ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+	            errorField.setText("Imported successfully.");
 			}
 
 			//		 You will use the file to replace the datalist object. I.e. you will be loading in a new
 			//		 list of formdata.
 			// TODO: display error message on fail, else display success message
+			else
+			{
+				errorField.setText("Error!");
+			}
+			
 
         	// Use this code snippet to reset visuals after importing:
-			/*
+			
             int select = 0;
 			DefaultComboBoxModel<String> newComboBoxModel = getComboBoxModel(datalist);
 			formSelect.setModel(newComboBoxModel);
 			formSelect.setSelectedIndex(select);
 			this.setVisuals(datalist.get(select));
-			*/
+			
 		});
 		JButton exportButton = new JButton("Export");
 		exportButton.addActionListener((e) -> {
 
+			
+			
+			
 			// TODO: Choose a file (hint, use JFileChooser):
 			JFileChooser chooser = new JFileChooser();
 			int returnVal = chooser.showSaveDialog(exportButton);
 			// TODO: export datalist from a file (hint, use file.getAbsolutePath()):
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            File file = chooser.getSelectedFile();
-	            file.getAbsolutePath();
+	            
+	            FileOutputStream fileOutput = null;
+	            ObjectOutputStream objOut = null;
+	            
+	            try {
+					fileOutput = new FileOutputStream(file.getAbsolutePath());
+					objOut = new ObjectOutputStream(fileOutput);
+					objOut.writeObject(datalist);
+					
+				} catch (IOException e1) {
+				
+					e1.printStackTrace();
+				}
+	            errorField.setText("Saved successfully.");
+	           
 			}
 			// TODO: display error message on fail, else display success message
+			else
+			{
+				errorField.setText("Error!");
+			}
 		});
 
 		// TODO: add import/export to panel and add to frame
